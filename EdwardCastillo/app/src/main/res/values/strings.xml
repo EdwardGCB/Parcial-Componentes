@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Planificador</string>
+    <string name="subTitle">Mis viajes</string>
+    <string name="title_add">Viaje %1$s</string>
+    <string name="search">Buscar</string>
+    <string name="description">Destino</string>
+    <string name="details">Ver más</string>
+    <string name="start_date">Fecha inicio: %1$s.</string>
+    <string name="end_date">Fecha Fin: %1$s.</string>
+    <string name="destino">Destino: %1$s.</string>
+    <string name="title">Mis viajes</string>
+    <string name="activity">Actividades</string>
+    <string name="site">Lugares</string>
+    <string name="content">%1$s</string>
+    <string name="price">Presupuesto: $%1$s</string>
+    <string name="numViaje">Viaje # %1$s</string>
+</resources>
