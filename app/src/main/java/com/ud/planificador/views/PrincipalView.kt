@@ -37,12 +37,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ud.planificador.R
+import com.ud.planificador.logic.ListaViajes
+import com.ud.planificador.logic.Viaje
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrincipalView(navController: NavController) {
     val searchText = remember { mutableStateOf("") }
-    val envio = remember { mutableStateOf(false) }
+    var viajes: List<Viaje> = listOf()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,14 +74,19 @@ fun PrincipalView(navController: NavController) {
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            BarraBusqueda(valor = searchText, envio = envio)
+            BarraBusqueda(searchText)
             LazyColumn {
-                items(count = 7) {
+                if (searchText.value == "") viajes = ListaViajes().ObtenerViajes() else viajes =
+                    ListaViajes().FiltrarViajes(searchText, ListaViajes().ObtenerViajes())
+                items(viajes.size) {
+                    val i = it
                     TarjetaViaje(
-                        numero = it,
-                        startDate = "17/09/2024",
-                        endDate = "17/12/2024",
-                        destination = "Cali",
+                        i,
+                        viajes[i].idViaje,
+                        viajes[i].destino,
+                        viajes[i].fechaIn,
+                        viajes[i].fechaFi,
+                        viajes[i].presupuesto,
                         navController
                     )
                 }
@@ -89,7 +96,7 @@ fun PrincipalView(navController: NavController) {
 }
 
 @Composable
-fun BarraBusqueda(valor: MutableState<String>, envio: MutableState<Boolean>) {
+fun BarraBusqueda(valor: MutableState<String>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -102,7 +109,7 @@ fun BarraBusqueda(valor: MutableState<String>, envio: MutableState<Boolean>) {
             },
             placeholder = {
                 Text(
-                    text = stringResource(id = R.string.search),
+                    text = stringResource(R.string.search),
                     style = MaterialTheme.typography.labelLarge
                 )
             },
@@ -115,7 +122,7 @@ fun BarraBusqueda(valor: MutableState<String>, envio: MutableState<Boolean>) {
                 capitalization = KeyboardCapitalization.Words,
             ),
             keyboardActions = KeyboardActions(onAny = {
-                envio.value = true
+
             })
         )
         IconButton(
@@ -135,10 +142,12 @@ fun BarraBusqueda(valor: MutableState<String>, envio: MutableState<Boolean>) {
 
 @Composable
 fun TarjetaViaje(
-    numero: Int,
-    startDate: String,
-    endDate: String,
-    destination: String,
+    num: Int,
+    idViaje: Int,
+    destino: String,
+    fechaIn: String,
+    fechaFi: String,
+    presupuesto: Double,
     navController: NavController
 ) {
     Card(
@@ -150,25 +159,32 @@ fun TarjetaViaje(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.numViaje, (numero + 1)),
+                text = stringResource(R.string.numViaje, (num + 1)),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(id = R.string.destino, destination),
+                text = stringResource(R.string.destino, destino),
                 style = MaterialTheme.typography.bodyLarge
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(id = R.string.start_date, startDate),
+                text = stringResource(R.string.start_date, fechaIn),
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(id = R.string.end_date, endDate),
+                text = stringResource(R.string.end_date, fechaFi),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.price, presupuesto),
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Button(onClick = { navController.navigate("viaje/$numero") }) {
+                Button(onClick = { navController.navigate("viaje/$idViaje") }) {
                     Text(text = stringResource(id = R.string.details))
                 }
             }
