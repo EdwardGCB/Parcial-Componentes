@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ud.planificador.R
 import com.ud.planificador.logic.ListaViajes
+import com.ud.planificador.logic.Operaciones
 import com.ud.planificador.logic.Viaje
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,11 +78,10 @@ fun PrincipalView(navController: NavController) {
             BarraBusqueda(searchText)
             LazyColumn {
                 if (searchText.value == "") viajes = ListaViajes().ObtenerViajes() else viajes =
-                    ListaViajes().FiltrarViajes(searchText, ListaViajes().ObtenerViajes())
+                    Operaciones().FiltrarViajes(searchText, ListaViajes().ObtenerViajes())
                 items(viajes.size) {
                     val i = it
                     TarjetaViaje(
-                        i,
                         viajes[i].idViaje,
                         viajes[i].destino,
                         viajes[i].fechaIn,
@@ -142,7 +142,6 @@ fun BarraBusqueda(valor: MutableState<String>) {
 
 @Composable
 fun TarjetaViaje(
-    num: Int,
     idViaje: Int,
     destino: String,
     fechaIn: String,
@@ -159,7 +158,7 @@ fun TarjetaViaje(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(R.string.numViaje, (num + 1)),
+                text = stringResource(R.string.numViaje, idViaje),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(8.dp))

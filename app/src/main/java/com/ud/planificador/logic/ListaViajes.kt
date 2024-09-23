@@ -9,10 +9,18 @@ open class ListaViajes {
         viajes.add(viaje)
     }
 
+    open fun ActualizarViaje(viaje: Viaje){
+        viajes[viaje.idViaje-1] = viaje
+    }
+
+    open fun EliminarViaje(indice: Int){
+        viajes.removeAt(indice)
+    }
+
     open fun ObtenerViajes(): List<Viaje> {
         if (viajes.isEmpty()) {
             val viaje1 = Viaje(
-                10,
+                1,
                 "París",
                 10000.0,
                 "20/09/2024",
@@ -28,7 +36,7 @@ open class ListaViajes {
                         "El Sena"
             )
             val viaje2 = Viaje(
-                11,
+                2,
                 "Tokio",
                 20000.0,
                 "01/06/2025",
@@ -44,7 +52,7 @@ open class ListaViajes {
                         "Museo Ghibli"
             )
             val viaje3 = Viaje(
-                12,
+                3,
                 "Nueva York",
                 30000.0,
                 "01/08/2025",
@@ -65,13 +73,5 @@ open class ListaViajes {
             AgregarViaje(viaje3)
         }
         return viajes.toList()
-    }
-
-    open fun FiltrarViajes(filtro: MutableState<String>, viajes2: List<Viaje>): List<Viaje> {
-        return viajes2.filter { it.destino.contains(filtro.value, ignoreCase = true) }
-    }
-
-    open fun BuscarViaje(idViaje: Int, viajes2: List<Viaje>): Viaje? {
-        return viajes2.find { it.idViaje == idViaje }
     }
 }

@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -25,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,12 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ud.planificador.R
 import com.ud.planificador.logic.ListaViajes
+import com.ud.planificador.logic.Operaciones
 import com.ud.planificador.logic.Viaje
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoView(navController: NavController, id: Int) {
-    val viaje: Viaje? = ListaViajes().BuscarViaje(id, ListaViajes().ObtenerViajes())
+    val viaje: Viaje? = Operaciones().BuscarViaje(id, ListaViajes().ObtenerViajes())
     Scaffold(
         topBar = {
             TopAppBar(
@@ -50,9 +54,6 @@ fun InfoView(navController: NavController, id: Int) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        /* Debo validar que el cliente quiere
-                        borrar la informacion que deseaba crear*/
-
                         navController.navigate("home")
                     }) {
                         Icon(
@@ -85,6 +86,7 @@ fun InfoView(navController: NavController, id: Int) {
 @Composable
 fun BottonFloating(navController: NavController, id: Int) {
     val estado = remember { mutableStateOf(false) }
+    val mostrarMensaje = remember { mutableStateOf(false) }
     Box(
         Modifier
             .fillMaxSize()
@@ -105,7 +107,9 @@ fun BottonFloating(navController: NavController, id: Int) {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 ExtendedFloatingActionButton(
-                    onClick = { /* Acción del segundo botón adicional */ }
+                    onClick = {
+                        mostrarMensaje.value = !mostrarMensaje.value
+                    }
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "Eliminar")
                 }
@@ -118,6 +122,9 @@ fun BottonFloating(navController: NavController, id: Int) {
                     if (!estado.value) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = "Desplegar"
                 )
+            }
+            if (mostrarMensaje.value) {
+                MensajeConfirmacion(navController, id, mostrarMensaje)
             }
         }
     }
@@ -188,5 +195,35 @@ fun Contenido(viaje: Viaje) {
                     .fillMaxWidth()
             )
         }
+    }
+}
+
+@Composable
+fun MensajeConfirmacion(navController: NavController, idViaje: Int, mostrarMensaje: MutableState<Boolean>) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        AlertDialog(
+            icon = {
+                Icon(Icons.Default.Delete, "Eliminar")
+            },
+            onDismissRequest = { mostrarMensaje.value = !mostrarMensaje.value },
+            title = {
+                Text(
+                    text = "¿Esta seguro de eliminar el viaje?"
+                )
+            },
+            dismissButton = {
+                Button(onClick = { mostrarMensaje.value = !mostrarMensaje.value }) {
+                    Text(text = "Cancelar")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    ListaViajes().EliminarViaje(idViaje-1)
+                    navController.navigate("home")
+                }) {
+                    Text(text = "Aceptar")
+                }
+            }
+        )
     }
 }
